@@ -1,5 +1,7 @@
+import joblib
 from fastapi import APIRouter, Body
 from typing import Annotated
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 from app.schemes.kitchen_schemes import ReadKitchenRequestSchema, ReadKitchenResponseSchema
 
@@ -10,6 +12,13 @@ kitchen_router = APIRouter(
 )
 
 
+model = joblib.load("whats_cooking.pkl")
+
+tfidf = joblib.load("tfidf_vectorizer.pkl")
+
+label_encoder = joblib.load("label_encoder.pkl")
+
+
 @kitchen_router.post(
     path="/",
     description="Получить тип кухни",
@@ -18,6 +27,10 @@ kitchen_router = APIRouter(
 async def read_kitchen(
         ingredient_list: Annotated[ReadKitchenRequestSchema, Body(...)]
 ) -> ReadKitchenResponseSchema:
-    ingredients = ", ".join(ingredient_list.ingredients)
+    ingredients_str = " ".join(ingredient_list.ingredients)
 
-    return ReadKitchenResponseSchema(kitchen="russian")
+    ingredients = tfidf.transform([ingredients_str])
+    predictions = model.predict(ingredients)
+    kitchen = label_encoder.inverse_transform(predictions)
+
+    return ReadKitchenResponseSchema(kitchen=kitchen[0])

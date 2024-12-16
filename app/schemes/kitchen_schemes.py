@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 class ReadKitchenRequestSchema(BaseModel):
     ingredients: List[str] = Field(
         description="Список ингредиентов на английском",
-        examples=["plain flour, ground pepper, salt"]
+        examples=[["plain flour", "ground pepper", "salt"], ["salt", "oil"]]
     )
 
 
