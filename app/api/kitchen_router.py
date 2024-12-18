@@ -1,7 +1,6 @@
 import joblib
 from fastapi import APIRouter, Body
 from typing import Annotated
-from sklearn.feature_extraction.text import TfidfVectorizer
 
 from app.schemes.kitchen_schemes import ReadKitchenRequestSchema, ReadKitchenResponseSchema
 
